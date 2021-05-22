@@ -64,3 +64,7 @@ p {
 .about {
   background: lightsteelblue;
 }
+
+.active {
+  border-bottom: 2px solid;
+}
