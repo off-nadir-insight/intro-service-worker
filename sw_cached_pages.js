@@ -52,5 +52,3 @@ self.addEventListener('fetch', event => {
     fetch(event.request).catch(() => caches.match(event.request))
   )
 })
-
-// issue: not seeing fetch event triggers, offline mode not using cache, further investigation here
