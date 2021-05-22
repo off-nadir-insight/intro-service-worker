@@ -1,26 +1,8 @@
-const cacheName = 'v1'
-
-const cacheAssets = [
-  '../index.html',
-  '../about.html',
-  '../css/style.css',
-  './index.js'
-]
+const cacheName = 'v3'
 
 // call install event
 self.addEventListener('install', event => {
   console.log('Service Worker: Installed')
-
-  // wait until promise is finished, then gets rid of service worker
-  event.waitUntil(
-    caches
-      .open(cacheName)
-      .then(cache => {
-        console.log('Service Worker: Caching files')
-        cache.addAll(cacheAssets)
-      })
-      .then(() => self.skipWaiting())
-  )
 })
 
 // call activate event
@@ -43,12 +25,23 @@ self.addEventListener('activate', event => {
 })
 
 // call fetch event
-self.addEventListener('fetch', event => {
-  console.log(event)
+self.addEventListener('fetch', e => {
   console.log('Service Worker: Fetching')
 
   // if live site is available, load live site, otherwise, load cache
-  event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        // make clone of response
+        const resClone = res.clone()
+        // open cache
+        caches
+          .open(cacheName)
+          .then(cache => {
+            // add response to cache
+            cache.put(e.request, resClone)
+          })
+        return res
+      }).catch(err => caches.match(e.request).then(res => res))
   )
 })
